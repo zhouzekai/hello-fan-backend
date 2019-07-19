@@ -1,10 +1,15 @@
 package com.hellofan.backend.controller;
 
 import com.hellofan.backend.dto.UserDto;
-import com.hellofan.backend.model.User;
+import com.hellofan.backend.dto.UserInfo;
+import com.hellofan.backend.model.generator.User;
 import com.hellofan.backend.service.UserService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.Map;
 
 @RestController
 @RequestMapping("user")
@@ -36,10 +41,15 @@ public class UserController {
 
     }
 
+    @GetMapping("/getUpdateTime")
+    public Date getUpdateTime(String userName){
+        // return studyPlanService.
+        return userService.getUpdateTime(userName);
+    }
+
     //校对验证码
     @GetMapping("/verifyCode")
     public String verifyCode(String phoneNum,String code) {
-
         return userService.verify(phoneNum,code).toString();
     }
 
@@ -66,9 +76,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public boolean login(@RequestBody User user) {
-        System.out.println("name:"+user.getUserName()+" password"+user.getPassword());
-        return userService.verifyUserInfo(user.getUserName(),user.getPassword());
+    public String login(@RequestBody User user) {
+        String result=userService.verifyUserInfo(user.getUserName(),user.getPassword());
+        return result;
+
     }
 
     @GetMapping("/verify")
@@ -80,7 +91,6 @@ public class UserController {
             return "userNameRepeat";
         }
         return "true";
-
     }
 
     @PostMapping("/updatePassword")
@@ -98,5 +108,27 @@ public class UserController {
         }
         return "codeError";
 
+    }
+
+    @PostMapping("/updateSharedPreferences")
+    public boolean updateSharedPreferences(@RequestBody User user){
+        return userService.updateSharedPreferences(user);
+    }
+
+    @GetMapping("/getSharedPreferences")
+    public User getSharedPreferences(String userName){
+        User user=userService.getSharedPreferences(userName);
+        return user;
+    }
+
+    @GetMapping("/getUserInfo")
+    public UserInfo getUserInfo(String userName){
+        return userService.getUserInfo(userName);
+    }
+
+    @PostMapping("/saveUserInfo")
+    public String saveUserInfo(@RequestBody UserInfo userInfo)
+    {
+        return userService.saveUserInfo(userInfo);
     }
 }
